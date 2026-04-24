@@ -3,6 +3,8 @@ Nextstrain pipeline for genomic epidemiology of Influenza B virus, segments HA a
 
 This repository contains all essential files to generate Influenza B Nextstrain builds for the HA and NA segments. Using this pipeline, users can perform genomic epidemiology analyses, visualize phylogeographic results, and track Influenza B spread based on genomic data and associated metadata.
 
+![Nextstrain panel with FLU B overview](nextstrain_results.png)
+
 ### Getting started
 To run this pipeline for Influenza B projects, see the instructions available in the original [flexpipe repository](https://github.com/InstitutoTodosPelaSaude/flexpipe), which covers Unix CLI navigation, installation of a Nextstrain environment with conda/mamba, and a step-by-step tutorial on generating a Nextstrain build (preparing, aligning, and visualizing genomic data).
 
