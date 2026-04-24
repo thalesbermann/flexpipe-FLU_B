@@ -39,14 +39,7 @@ The viralQC output (containing `seqName` and `clade` columns) is used directly a
 ---
 
 ### Influenza B subsampling (NCBI Virus metadata)
-This repository includes a custom QC and subsampling pipeline designed for Influenza B sequence datasets derived from NCBI Virus. The recommended workflow is:
-
-1. **Quality control** — run viralQC to filter sequences and assign clades (via Nextclade, run internally by viralQC)
-2. **Subsampling** — run `subsample_FLU_B.py` using the filtered metadata and viralQC output
-3. **Nextstrain build** — run the flexpipe pipeline on the subsampled dataset
-
-### Usage
-Place your sequences, metadata, and viralQC output files in the working directory, then run:
+After QC, the dataset is subsampled using `subsample_FLU_B.py`:
 ```bash
 python3 subsample_FLU_B.py \
   --metadata metadata.tsv \
@@ -59,7 +52,7 @@ python3 subsample_FLU_B.py \
 | Argument | Default | Description |
 |---|---|---|
 | `--metadata` | *(required)* | Filtered post-QC metadata file |
-| `--nextclade` | *(required)* | viralQC output CSV/TSV containing `seqName` and `clade` columns (assigned internally by Nextclade) |
+| `--nextclade` | *(required)* | viralQC output CSV/TSV containing `seqName` and `clade` columns |
 | `--output-prefix` | *(required)* | Prefix for output files |
 | `--start-year` | `2010` | Minimum collection year |
 | `--target-size` | `2000` | Target dataset size before final caps |
