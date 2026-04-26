@@ -1,24 +1,34 @@
 # flexpipe-FLU-B
+
 Nextstrain pipeline for genomic epidemiology of Influenza B virus, segments HA and NA. This tool is derived from [flexpipe](https://github.com/InstitutoTodosPelaSaude/flexpipe) and adapted for Influenza B, similarly to how flexpipe-FLU-A was created for Influenza A.
 
 This repository contains all essential files to generate Influenza B Nextstrain builds for the HA and NA segments. Using this pipeline, users can perform genomic epidemiology analyses, visualize phylogeographic results, and track Influenza B spread based on genomic data and associated metadata.
 
-![Nextstrain panel with FLU B overview](nextstrain_results.png)
+![Nextstrain panel with Influenza B overview](nextstrain_results.png)
 
-### Getting started
+---
+
+## Getting Started
+
 To run this pipeline for Influenza B projects, see the instructions available in the original [flexpipe repository](https://github.com/InstitutoTodosPelaSaude/flexpipe), which covers Unix CLI navigation, installation of a Nextstrain environment with conda/mamba, and a step-by-step tutorial on generating a Nextstrain build (preparing, aligning, and visualizing genomic data).
 
 ---
 
-### Dataset retrieval (NCBI Virus)
+## Dataset Retrieval and Quality Control
+
+### Dataset Retrieval (NCBI Virus)
+
 Sequences were retrieved from NCBI Virus using the following filters:
+
 - Virus: Influenza B
 - Segment: HA or NA
 - Minimum coverage: ≥ 70% of the full segment length
 - Collection date: ≥ 2010
 
-### Quality control (viralQC)
+### Quality Control (viralQC)
+
 Sequences were processed using [viralQC](https://github.com/InstitutoTodosPelaSaude/viralQC), which performs quality filtering and runs Nextclade internally to assign clades:
+
 ```bash
 vqc run \
   --input sequences.fasta \
@@ -30,7 +40,9 @@ vqc run \
   --cores 8 \
   -v
 ```
+
 Sequences were retained only if they met:
+
 - `genomeQuality` = A or B
 - Coverage ≥ 70%
 
@@ -38,8 +50,10 @@ The viralQC output (containing `seqName` and `clade` columns) is used directly a
 
 ---
 
-### Influenza B subsampling (NCBI Virus metadata)
+## Influenza B Subsampling (NCBI Virus Metadata)
+
 After QC, the dataset is subsampled using `subsample_FLU_B.py`:
+
 ```bash
 python3 subsample_FLU_B.py \
   --metadata metadata.tsv \
@@ -47,7 +61,7 @@ python3 subsample_FLU_B.py \
   --output-prefix FLU_B_HA
 ```
 
-#### Available arguments
+### Available Arguments
 
 | Argument | Default | Description |
 |---|---|---|
@@ -60,7 +74,8 @@ python3 subsample_FLU_B.py \
 | `--max-per-country-global` | `100` | Maximum sequences per country in the global dataset |
 | `--max-per-year-global` | `100` | Maximum sequences per year in the final dataset |
 
-### Filtering and preprocessing
+### Filtering and Preprocessing
+
 - Retains only complete dates (`YYYY-MM-DD`)
 - Includes only sequences collected from **year 2010 onwards** (configurable via `--start-year`)
 - Metadata is merged with viralQC results (including clade assignments), matched by accession
@@ -69,7 +84,8 @@ python3 subsample_FLU_B.py \
 - A `region` column is inferred from country, grouping sequences into macro-regions (e.g. Latin America and the Caribbean, Eastern Asia, Sub-Saharan Africa)
 - Priority scores are computed for each sequence based on date completeness and sequence length, used to guide quality-aware subsampling
 
-### Subsampling strategy
+### Subsampling Strategy
+
 The dataset is reduced to approximately 2,000 sequences (configurable via `--target-size`) while preserving geographic, temporal, and evolutionary diversity.
 
 **Brazil (focal country)**
@@ -86,12 +102,16 @@ The dataset is reduced to approximately 2,000 sequences (configurable via `--tar
 - **Cap per year:** maximum of **100 sequences per year** in the final dataset
 
 ### Outputs
+
 The script generates two files:
 
-- `{prefix}_with_clades.tsv` → full post-QC metadata merged with clade assignments, before subsampling
-- `{prefix}_subsampled.tsv` → final filtered and subsampled metadata
+| File | Description |
+|---|---|
+| `{prefix}_with_clades.tsv` | Full post-QC metadata merged with clade assignments, before subsampling |
+| `{prefix}_subsampled.tsv` | Final filtered and subsampled metadata |
 
-Example (using `--output-prefix FLU_B_HA` or `FLU_B_NA`):
+Example output files using `--output-prefix FLU_B_HA` or `FLU_B_NA`:
+
 ```
 FLU_B_HA_with_clades.tsv
 FLU_B_HA_subsampled.tsv
@@ -100,8 +120,10 @@ FLU_B_NA_with_clades.tsv
 FLU_B_NA_subsampled.tsv
 ```
 
-### Sequence extraction
-You can extract the corresponding sequences using:
+### Sequence Extraction
+
+Extract the corresponding sequences using:
+
 ```bash
 cut -f1 FLU_B_HA_subsampled.tsv | tail -n +2 > keep_ids.txt
 seqkit grep -f keep_ids.txt sequences_HA.fasta -o subsampled_HA.fasta
@@ -109,8 +131,9 @@ seqkit grep -f keep_ids.txt sequences_HA.fasta -o subsampled_HA.fasta
 
 ---
 
-### Adjustments for Influenza B runs
-The Snakefile provided here is pre-configured for Influenza B — HA and NA segments. Since these are individual gene segments (not full genomes), no UTR trimming is applied — masking is set to 1 bp on both ends as a minimal placeholder. The clock rate is left undefined so that Nextstrain (augur) estimates it automatically from the data. Example:
+## Adjustments for Influenza B Runs
+
+The Snakefile provided here is pre-configured for Influenza B — HA and NA segments. Since these are individual gene segments (not full genomes), no UTR trimming is applied — masking is set to 1 bp on both ends as a minimal placeholder. The clock rate is left undefined so that Nextstrain (augur) estimates it automatically from the data.
 
 ```python
 rule parameters:
@@ -124,8 +147,13 @@ rule parameters:
 
 ---
 
-### Author
-* **Thales Bermann, Instituto Todos pela Saúde (ITpS)** - thalesbermann@gmail.com
+## Author
+
+**Thales Bermann** — Instituto Todos pela Saúde (ITpS)
+✉️ [thalesbermann@gmail.com](mailto:thalesbermann@gmail.com)
+
+---
 
 ## License
-This project is licensed under the MIT License.
+
+This project is licensed under the [MIT License](LICENSE).
